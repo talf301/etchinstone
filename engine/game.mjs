@@ -184,8 +184,8 @@ export function evaluate(s, plan) {
     const cols = etherOf(reserve);
     const col = cols.length > 1 ? option("cp", "Contingency Plan reads", cols.map((c) => ({ v: c, label: c })), cols[0]) : cols[0];
     const x = abil(id).x;
-    if (col === "F" && attacking) globalAct.push([x, "Contingency Plan"]);
-    if (col === "S" && moving) globalAct.push([x, "Contingency Plan"]);
+    if (col === "F") globalAct.push([x, "Contingency Plan", "a"]);
+    if (col === "S") globalAct.push([x, "Contingency Plan", "m"]);
     if (col === "W") { shieldMod += x; shieldNotes.push(`Contingency Plan +${x} armor`); }
     if (col === "L") globalInit.push([x, "Contingency Plan"]);
   }
@@ -197,8 +197,8 @@ export function evaluate(s, plan) {
     const cost = UNIT_COST[roleOf(id).role] || 4;
     unitCost += cost;
     E.lines.push(final ? `${name(id)}'s unit costs ${cost * 2} damage.` : `${name(id)}'s unit costs ${cost} XP.`);
-    if (skill === "attack" && attacking) globalAct.push([a.rank, "Unit"]);
-    if (skill === "move" && moving) globalAct.push([a.rank, "Unit"]);
+    if (skill === "attack") globalAct.push([a.rank, "Unit", "a"]);
+    if (skill === "move") globalAct.push([a.rank, "Unit", "m"]);
     if (skill === "initiative") globalInit.push([a.rank, "Unit"]);
     if (skill === "armor") { shieldMod += a.rank; shieldNotes.push(`Unit +${a.rank} armor`); }
   }
@@ -209,11 +209,13 @@ export function evaluate(s, plan) {
 
   // --- each action set ---
   const fit = (t) => t === "x" || slow || (attacking ? t === "a" : t === "m");
+  let firstLive = true;
   sets.forEach((x, i) => {
     const R = { i, lines: [], value: 0, init: 0, boost: 0, enhanced: false, el: null, empty: x.spell == null };
     E.sets.push(R);
     if (x.spell == null) return;
-    const what = attacking ? "Attack" : "Move";
+    const first = firstLive;
+    firstLive = false;
     // element
     const bg = bgOf(x.element);
     const sp = face(s, x.spell);
@@ -234,6 +236,9 @@ export function evaluate(s, plan) {
         R.lines.push(`Ether Chain plays ${name(reserve)}'s ether action +${variant.chain}.`);
       } else R.lines.push("Ether Chain has no Reserve card to copy: basic action.");
     } else if (variant) actn = { t: variant.t, v: variant.v, enhanced: true };
+    // Against a Slow enemy a move action is compared as Move.
+    const playsMove = moving || (slow && actn.t === "m");
+    const what = playsMove ? "Move" : "Attack";
     let value;
     if (fit(actn.t)) {
       value = actn.v;
@@ -252,33 +257,33 @@ export function evaluate(s, plan) {
       const a = abil(id);
       if (a?.kind !== "seeingRed" || x.boost == null) continue;
       const bt = face(s, x.boost).basic.t;
-      if ((bt === "a" || bt === "x") && attacking) add(a.plus, "Seeing Red");
-      else if (bt === "m" && moving) add(-a.minus, "Seeing Red");
+      if ((bt === "a" || bt === "x") && !playsMove) add(a.plus, "Seeing Red");
+      else if (bt === "m" && playsMove) add(-a.minus, "Seeing Red");
     }
-    if (i === 0) for (const [n, why] of globalAct) add(n, why);
+    if (first) for (const [n, why, t] of globalAct) if ((t === "m") === playsMove) add(n, why);
     // boost
     let boost = x.boost == null ? 0 : face(s, x.boost).boost;
-    if (x.boost != null && pr?.kind === "drain") boost = Math.max(0, boost - pr.x);
+    if (x.boost != null && pr?.kind === "drain") boost = Math.min(boost, Math.max(0, boost - pr.x));
     // initiative
     let init = x.element == null ? 0 : face(s, x.element).init;
     const initLines = [`Initiative ${init}`];
     const addInit = (n, why) => { if (n) { init += n; initLines.push(`${n > 0 ? "+" : ""}${n} ${why}`); } };
     if (ps?.kind === "slowWit") addInit(-ps.x, name(x.spell));
     if (pb?.kind === "slowWit") addInit(-pb.x, name(x.boost));
-    if (i === 0) for (const [n, why] of globalInit) addInit(n, why);
+    if (first) for (const [n, why] of globalInit) addInit(n, why);
     for (const id of withAbility("illumined")) {
       if (x.boost == null) continue;
       const cols = etherOf(x.boost);
       const col = cols.length > 1 ? option(`ip${i}`, "Illumined Path reads", cols.map((c) => ({ v: c, label: c })), cols[0]) : cols[0];
       const n = abil(id).x;
-      if (col === "F" && i === 0) { shieldMod -= n; shieldNotes.push(`Illumined Path −${n} armor`); }
-      if ((col === "S" || col === "W") && moving) add(-n, "Illumined Path");
+      if (col === "F" && first) { shieldMod -= n; shieldNotes.push(`Illumined Path −${n} armor`); }
+      if ((col === "S" || col === "W") && playsMove) add(-n, "Illumined Path");
       if (col === "L") addInit(-n, "Illumined Path");
     }
     if (hardship === "night" && x.boost != null) {
       const cut = Math.max(0, init);
       if (cut && boost > 0) R.lines.push(`Night Travel: Boost ${boost} − ${cut}`);
-      boost = Math.max(0, boost - cut);
+      boost = Math.min(boost, Math.max(0, boost - cut));
     }
     Object.assign(R, { value, init, boost, initLines, boostBg: bgOf(x.boost), spellBg: bgOf(x.spell) });
   });
