@@ -277,3 +277,8 @@ small { font-weight: 400; }
 .tip { text-align: center; font-size: 12.5px; color: var(--dim); padding: 1px 0 3px; }
 .banner { padding: 5px 10px; }
 .slot .card { pointer-events: auto; }
+
+/* iOS Safari only sends taps on non-button elements to the page-level handler when they are marked clickable. */
+[data-slot], [data-card], [data-act], [data-zoom], [data-gloss], .shade, label.check { cursor: pointer; }
+.slot, .card { touch-action: manipulation; }
+.ver { text-align: center; font-size: 11px; color: var(--dim); }

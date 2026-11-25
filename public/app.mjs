@@ -1,3 +1,4 @@
+import { VERSION } from "./version.mjs";
 import { act, canDivert, dragon, encounter, evaluate, face, liveCards, newGame, regionDef, score, soakValue, soakable, upgradeCost, campaign } from "./engine/game.mjs";
 import { CAMPAIGNS, DIFFICULTIES, DRAGONS, ELEMENT_NAME, GLOSSARY, MAGES, NORTH_CARDS, cardDef } from "./engine/data.mjs";
 
@@ -134,7 +135,7 @@ function titleHTML() {
         <button class="btn ${G ? "" : "gold"}" data-act="new">New expedition</button>
         <button class="btn ghost" data-act="rules">How to play</button>
       </div>
-      <p class="credit">Game by Joe Klipfel. Unofficial fan implementation.</p>
+      <p class="credit">Game by Joe Klipfel. Unofficial fan implementation. Version ${VERSION}</p>
     </div>
   </main>`;
 }
@@ -532,6 +533,7 @@ function menuModal() {
       <button class="btn" data-act="title">Save and leave</button>
       <button class="btn danger" data-act="abandon">Abandon expedition</button>
     </div>
+    <p class="ver">Version ${VERSION}</p>
     <p class="hint">${CAMPAIGNS[G.cfg.campaign].name} · ${DIFFICULTIES.find((d) => d.id === G.cfg.difficulty).name}${G.cfg.cavalier ? " · Cavalier" : ""}${G.cfg.glass ? " · Glass Cannon" : ""}${G.cfg.mages.length ? " · " + G.cfg.mages.map((m) => MAGES.find((x) => x.id === m).name).join(", ") : ""}</p>`);
 }
 function rulesModal() {
@@ -696,4 +698,14 @@ if (q.has("modal")) ({ rules: rulesModal, cards: cardsModal, region: regionModal
 if (q.has("why")) { U.why = true; render(); }
 if (q.has("click")) for (const sel of q.get("click").split(";")) { const n = document.querySelector(sel); if (n) n.click(); else console.warn("no " + sel); }
 
-if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  // Show a new version as soon as it has taken over, instead of on the load after next.
+  const had = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!had || reloaded) return;
+    reloaded = true;
+    location.reload();
+  });
+  navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then((r) => r.update()).catch(() => {});
+}
