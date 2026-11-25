@@ -273,3 +273,7 @@ small { font-weight: 400; }
 /* two rows of cards: width chosen so that both rows fit the height of the middle area */
 .hand.fit { width: min(100%, calc((100cqh - 64px) * 1.452 + 24px)); margin-inline: auto; }
 .banner { margin-bottom: 0; }
+
+.tip { text-align: center; font-size: 12.5px; color: var(--dim); padding: 1px 0 3px; }
+.banner { padding: 5px 10px; }
+.slot .card { pointer-events: auto; }
