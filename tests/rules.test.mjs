@@ -204,3 +204,16 @@ test("Northvale: positional power, colorless element, units paid in XP, pursuer"
   s = mk({ hand: [22, 1, 0, 8], key: 12, cfg: { mages: ["mythix"] } });
   assert.equal(evaluate(s, plan(0, 22, 8)).need, 11);
 });
+
+test("review fixes: slow enemies take move bonuses, negative boosts stay negative, final bonuses need no set 1", () => {
+  // Whispering Fields enemy 1 (slow, HP 14): key 2 at L3 -> E1. Decisive Leader unit +2 move with a move spell.
+  let s = mk({ hand: [5, 26, 9, 8], key: 2, lv: { 2: 3 }, region: 2, cfg: { campaign: "north", mages: ["noramir"] } });
+  assert.ok(encounter(s).enemy.abilities.includes("slow"));
+  const base = evaluate(s, plan(5, 8, 9)).action;
+  assert.equal(base, 5 + 2);
+  assert.equal(evaluate(s, plan(5, 8, 9, { opts: { unit26: "move" } })).action, base + 2);
+  assert.equal(evaluate(s, plan(5, 8, 9, { opts: { unit26: "move" } })).unitCost, 4);
+  // Elemental Shift L1 has Boost -3; Night Travel (key Sword of Light L2) must not raise it to 0.
+  s = mk({ hand: [5, 8, 23, 0], key: 1, lv: { 23: 1 }, cfg: { mages: ["mythix"] } });
+  assert.equal(evaluate(s, plan(5, 8, 23)).action, 5 - 3);
+});
