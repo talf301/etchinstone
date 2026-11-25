@@ -2,9 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { newGame, act, evaluate, encounter, soakValue, soakable } from "../public/engine/game.mjs";
 
-// Card ids: 0 Destruction(W) 1 Sword of Light(W) 2 Brute Force(W) 3 Frostfire Wall(W)
+// Card ids: 0 Destruction(W) 1 Sword of Light(W) 2 Brute Force(W) 3 Ice Wall(W)
 // 4 Rain of Blood(L) 5 Fleet Footed(L) 6 Adapt(L) 7 River Swiftness(L) 8 Burning Bridges(F)
-// 9 Motivated Flight(F) 10 Adapt(F) 11 Frostfire Wall(F) 12 Rain of Blood(S) 13 Fleet Footed(S)
+// 9 Motivated Flight(F) 10 Adapt(F) 11 Ice Wall(F) 12 Rain of Blood(S) 13 Fleet Footed(S)
 // 14 Determined March(S) 15 River Swiftness(S)
 function mk({ hand, key, lv = {}, region = 1, cfg = {}, deck }) {
   const s = newGame({ ...cfg }, 5);
@@ -74,7 +74,7 @@ test("narrow journey costs time; running out of deck becomes damage", () => {
 });
 
 test("soaking: matching armor doubles, glass cannon adds one, a card soaks once, level 1 is trashed", () => {
-  // Region 1 enemy 3 (key 6 L1 -> E3): attack 2 W. Frostfire Wall L2 has armor 2 W.
+  // Region 1 enemy 3 (key 6 L1 -> E3): attack 2 W. Ice Wall L2 has armor 2 W.
   const s = mk({ hand: [3, 0, 8, 12], key: 6, lv: { 6: 1, 8: 1 } });
   let t = run(s, { type: "resolve", plan: plan(8, 0, 12) }, { type: "continue" });
   assert.equal(t.phase, "soak");

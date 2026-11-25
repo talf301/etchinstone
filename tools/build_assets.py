@@ -57,9 +57,9 @@ for r in range(1, 5):
 # Base dragons: painted art from the reference images, card from the rulebook.
 for name in ("Grimroch", "Vuurhast", "Helsang"):
     im = Image.open(f"{A}/Base Game/Boss References/{name}.jpg").convert("RGB")
-    save(im.crop((600, 95, 1280, 470)), f"{OUT}/d/{name.lower()}.webp", q=80)
+    save(im.crop((600, 120, 1280, 470)), f"{OUT}/d/{name.lower()}.webp", q=80)
 im = Image.open(f"{A}/Base Game/Rulebook Card Illustrations/Rodving - Dragon Card.png")
-save(im.convert("RGB").crop((190, 322, 318, 520)), f"{OUT}/d/rodving.webp", 384, q=88)
+save(im.convert("RGB").crop((204, 350, 290, 500)), f"{OUT}/d/rodving.webp", 300, q=88)
 
 # App artwork.
 save(Image.open(f"{A}/App Artwork/vale.webp").convert("RGB"), f"{OUT}/vale.webp", q=80)
@@ -143,4 +143,4 @@ for i, name in enumerate(regions, 1):
 for name in ("merinus", "blight-rider", "the-waykeeper", "aqualis"):
     r = used[f"r/n-{name}"][1]
     w, h = r.size
-    save(r.crop((round(0.165 * w), round(0.41 * h), round(0.835 * w), round(0.79 * h))), f"{OUT}/d/{name}.webp", q=88)
+    save(r.crop((round(0.165 * w), round(0.41 * h), round(0.835 * w), round(0.715 * h))), f"{OUT}/d/{name}.webp", q=88)
