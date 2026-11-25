@@ -336,7 +336,9 @@ function modeBanner() {
     "fuse-bottom": "Fuse: tap the card to tuck underneath.",
     "fuse-top": "Fuse: tap a card of the same element to keep on top.",
   }[U.mode];
-  return m ? `<div class="banner">${m}</div>` : "";
+  if (m) return `<div class="banner">${m}</div>`;
+  if (U.sel != null && U.pos[U.sel] != null) return `<div class="banner">Now tap the role for ${esc(cardDef(U.pos[U.sel]).name)}. The two cards swap.</div>`;
+  return `<div class="tip">Tap a card, then tap another role to swap them.</div>`;
 }
 
 function actionsHTML(E) {
@@ -583,6 +585,9 @@ function onSlot(key) {
 }
 
 document.addEventListener("click", (ev) => {
+  // A tap anywhere on a slot (its card included) selects it; only the enlarge button is separate.
+  const inSlot = ev.target.closest("[data-slot]");
+  if (inSlot && !ev.target.closest("[data-zoom]")) return onSlot(inSlot.dataset.slot);
   const t = ev.target.closest("[data-zoom],[data-zoomlv],[data-act],[data-slot],[data-card],[data-opt],[data-set],[data-mage],[data-gloss],[data-berserk],[data-fusecolor]");
   if (!t) return;
   const d = t.dataset;
