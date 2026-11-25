@@ -304,7 +304,7 @@ export function evaluate(s, plan) {
   const boostTarget = (R) => {
     if (!attacking) return "action";
     if (sets[R.i].boost == null) return "action";
-    return option(`boost${R.i}`, nSets > 1 ? `Set ${R.i + 1} Boost +${R.boost}` : `Boost +${R.boost}`, [{ v: "action", label: slow ? "Attack / Move" : "Attack" }, { v: "initiative", label: "Initiative" }], "action");
+    return option(`boost${R.i}`, nSets > 1 ? `Set ${R.i + 1} Boost ${R.boost < 0 ? "" : "+"}${R.boost}` : `Boost ${R.boost < 0 ? "" : "+"}${R.boost}`, [{ v: "action", label: slow ? "Attack / Move" : "Attack" }, { v: "initiative", label: "Initiative" }], "action");
   };
   const applyBoost = (R) => {
     const to = boostTarget(R);
