@@ -263,3 +263,13 @@ small { font-weight: 400; }
 
 .end .endbody { padding-top: 0; } .end h1 { margin-top: 2px; }
 .dragon img { object-position: center top; }
+
+/* ---------- the hand always fits between the panels and the action bar ---------- */
+.game { height: 100dvh; }
+.bar, .actions { position: relative; z-index: 5; }
+.top { max-height: 50dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+.midwrap { container-type: size; overflow: hidden; }
+.midwrap > .hand { overflow-y: auto; }
+/* two rows of cards: width chosen so that both rows fit the height of the middle area */
+.hand.fit { width: min(100%, calc((100cqh - 64px) * 1.452 + 24px)); margin-inline: auto; }
+.banner { margin-bottom: 0; }

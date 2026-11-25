@@ -319,7 +319,7 @@ function canFuseWith(id) {
 }
 
 function handHTML(E) {
-  if (!isFinal()) return `<div class="hand grid2">${REGION_SLOTS.map((k) => slotHTML(k, E)).join("")}</div>`;
+  if (!isFinal()) return `<div class="hand grid2 fit">${REGION_SLOTS.map((k) => slotHTML(k, E)).join("")}</div>`;
   const keys = slotKeys();
   const row = (ks) => ks.map((k) => slotHTML(k, E)).join("");
   return `<div class="hand final scrolly">
@@ -401,7 +401,7 @@ function upgradePanel() {
 }
 function plainHand(badgeFor) {
   const n = G.hand.length;
-  return `<div class="hand ${n > 4 ? "grid3" : "grid2"} scrolly">${G.hand.map((id) => {
+  return `<div class="hand ${n > 4 ? "grid3" : "grid2 fit"} scrolly">${G.hand.map((id) => {
     const b = badgeFor(id);
     return cardHTML(id, { cls: `${b.cls || ""} ${U.pick === id ? "picked" : ""}`, badge: b.html || "" });
   }).join("")}</div>`;
@@ -412,8 +412,8 @@ function gameHTML() {
   if (planning()) {
     const E = evaluate(G, plan());
     // keep the chosen options in step with what is offered
-    top = encounterHTML(E) + previewHTML(E);
-    mid = modeBanner() + handHTML(E);
+    top = encounterHTML(E) + previewHTML(E) + modeBanner();
+    mid = handHTML(E);
     actions = actionsHTML(E);
   } else if (G.phase === "result") {
     top = resultHTML();
