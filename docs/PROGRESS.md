@@ -12,8 +12,9 @@
 - [x] Tests: rules cases, random-play fuzz across every setup, greedy bot that wins
 - [x] iPhone UI, PWA shell, offline cache
 - [x] Independent rules review applied
-- [ ] Hosting: needs Tal's choice (GitHub Pages needs a public repository or a paid plan)
-- [ ] Not yet played by a human on a real iPhone
+- [x] Hosting: public repository, GitHub Pages at https://talf301.github.io/etchinstone/ (Tal runs `git subtree push --prefix public origin gh-pages`)
+- [x] On a real iPhone: the page loads and tapping cards works (version 687505bf01)
+- [ ] Not yet played through to the Final Battle by a human; offline use and the Home Screen install are unconfirmed
 
 ## Rulings
 See README.
